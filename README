@@ -1,0 +1,90 @@
+NAME
+    Plack::Middleware::ContentOverride - Override Request Content Body by
+    File Uploading or Query Parameter
+
+SYNOPSIS
+    In your Plack app:
+
+        use Plack::Request;
+
+        my $app = sub {
+            my $env  = shift;
+            my $req  = Plack::Request->new($env);
+            my $type = $req->content_type;
+            my $body = $req->content;
+            ...;
+        }
+
+        use Plack::Builder;
+
+        builder {
+            enable 'ContentOverride';
+            $app;
+        };
+
+    Payload as an uploaded file overrides the request content body:
+
+        <form method="POST" enctype="multipart/form-data" action="...">
+            <input type="file" name="payload">
+        </form>
+
+    Payload as a query parameter overrides the request content body:
+
+        <form enctype="application/x-www-form-urlencoded" action="...">
+            <textarea name="payload"></textarea>
+        </form>
+
+DESCRIPTION
+    This allows a payload sent from a HTML form to override "Plack"'s
+    request content body. This would help you to run a RESTful app through
+    traditional HTML forms.
+
+    A couple of payload styles are available: 1. file uploading and 2. query
+    parameter.
+
+  File Uploading
+    For an app which receives a binary content of JPEG, PNG, etc. including
+    a larger content, use "method="POST"" and
+    "enctype="multipart/form-data"" to perform a file uploading.
+
+  Query Parameter
+    For an app which receives a text content of JSON, XML, etc., "textarea"
+    element would work fine.
+
+CONFIGURATION
+    This middleware accepts the following configuration keys.
+
+        enable 'ContentOverride', payload => 'body', content_type => 'application/xml';
+
+  payload
+    This specifies a request query parameter which contains a new content
+    body. Default name is "payload".
+
+        enable 'ContentOverride', payload => 'payload'; # default
+
+  content_type
+    This specifies a new content type. Default type is
+    "application/octet-stream".
+
+        enable 'ContentOverride', content_type => 'application/octet-stream'; # default
+
+AUTHOR
+    Yusuke Kawasaki http://www.kawa.net/
+
+COPYRIGHT
+    The following copyright notice applies to all the files provided in this
+    distribution, including binary files, unless explicitly noted otherwise.
+
+    Copyright 2012 Yusuke Kawasaki
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    Plack::Middleware::MethodOverride - Override REST methods to Plack apps
+    via POST
+
+    Catalyst::Action::DeserializeMultiPart - Deserialize Data in a Multipart
+    Request
+
